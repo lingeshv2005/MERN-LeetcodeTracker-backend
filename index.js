@@ -30,7 +30,7 @@ const io = new Server(server, {
 // Middleware setup
 app.use(express.json());
 app.use(cors({
-  origin: 'https://leetcode-tracker-tau.vercel.app',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }));
 
