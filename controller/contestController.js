@@ -2,7 +2,7 @@ import Contest from '../models/Contest.js';
 import Problem from '../models/Problem.js';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
-import { Newspaper } from 'lucide-react';
+// import { Newspaper } from 'lucide-react';
 
 // Create a new contest
 export const createContest = async (req, res) => {
