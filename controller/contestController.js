@@ -221,8 +221,8 @@ export const addSubmissionToContestProblem = async (req, res) => {
     if (!participant)
       return res.status(403).json({ message: 'You are not a participant in this contest' });
 
-    if (!contest.allowLateJoin && participant.joinedAt > contest.startTime)
-      return res.status(403).json({ message: 'Late joiners are not allowed to submit.' });
+    // if (!contest.allowLateJoin && participant.joinedAt > contest.startTime)
+    //   return res.status(403).json({ message: 'Late joiners are not allowed to submit.' });
 
     const problemExists = contest.problems.includes(problemId);
     if (!problemExists)
