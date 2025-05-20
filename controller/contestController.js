@@ -70,9 +70,9 @@ export const getContestById = async (req, res) => {
 
     const contestObj = contest.toObject();
 
-    // if (now < new Date(contest.startTime)) {
-    //   contestObj.problems = undefined;
-    // }
+    if (now < new Date(contest.startTime)) {
+      contestObj.problems = undefined;
+    }
 
     res.json(contestObj);
   } catch (error) {
@@ -254,15 +254,15 @@ export const addSubmissionToContestProblem = async (req, res) => {
         const execTime = (response.data.run.time || 0) * 1000; // in ms
         const memoryUsedKb = (response.data.run.memory || 0) / 1024; // in MB
 
-        if (execTime > timeLimit * 1000) {
-          status = 'TLE';
-          break;
-        }
+        // if (execTime > timeLimit * 1000) {
+        //   status = 'TLE';
+        //   break;
+        // }
 
-        if (memoryUsedKb > memoryLimit) {
-          status = 'RE';
-          break;
-        }
+        // if (memoryUsedKb > memoryLimit) {
+        //   status = 'RE';
+        //   break;
+        // }
 
         if (actualOutput === expectedOutput) {
           passedTestCases++;
