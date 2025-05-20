@@ -70,9 +70,9 @@ export const getContestById = async (req, res) => {
 
     const contestObj = contest.toObject();
 
-    if (now < new Date(contest.startTime)) {
-      contestObj.problems = undefined;
-    }
+    // if (now < new Date(contest.startTime)) {
+    //   contestObj.problems = undefined;
+    // }
 
     res.json(contestObj);
   } catch (error) {
