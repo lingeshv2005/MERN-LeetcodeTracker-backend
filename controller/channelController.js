@@ -77,46 +77,54 @@ export const getChannelByCommunicationId = async (req, res) => {
     }
   };
   
-// Add a participant to a channel
 export const addParticipantToChannel = async (req, res) => {
   try {
     const { communicationId } = req.params;
-    const { userId, addedBy } = req.body;
+    const { username, addedBy } = req.body;
 
+    // Find the channel
     const channel = await Channel.findOne({ communicationId });
     if (!channel) {
-      return res.status(404).json({ message: "Channel not found" });
+      return res.status(404).json({ error: "Channel not found" });
     }
 
+    // Check if the user adding others is an admin
     const isAdmin = channel.adminIds.some(a => a.userId === addedBy);
     const isParticipant = channel.participants.some(p => p.userId === addedBy);
 
-    // Permission logic
+    // Apply permission rules
     if (channel.isReadOnly && !isAdmin) {
-      return res.status(403).json({ message: "Only admins can add participants in read-only channels" });
-    }
-    if (!channel.isReadOnly && !(isAdmin || isParticipant)) {
-      return res.status(403).json({ message: "You must be a participant or admin to add others" });
+      return res.status(403).json({ error: "Only admins can add participants in read-only channels" });
     }
 
+    if (!channel.isReadOnly && !(isAdmin || isParticipant)) {
+      return res.status(403).json({ error: "You must be a participant or admin to add others" });
+    }
+
+    // Find the user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userId = user.additionalDetails.userId;
+
+    // Check if user is already a participant
     const alreadyParticipant = channel.participants.some(p => p.userId === userId);
     if (alreadyParticipant) {
-      return res.status(400).json({ message: "User is already a participant" });
+      return res.status(400).json({ error: "User is already a participant" });
     }
 
-    const newParticipant = {
-      userId,
-      addedBy
-    };
-
-    channel.participants.push(newParticipant);
+    // Add participant (no role field)
+    channel.participants.push({ userId, addedBy });
     await channel.save();
 
-    await User.findOneAndUpdate(
-      { "additionalDetails.userId": userId },
+    // Add channelId to user's additionalDetails
+    await User.findByIdAndUpdate(
+      user._id,
       { $addToSet: { "additionalDetails.channelIds": communicationId } }
     );
-    
+
     res.status(200).json({ message: "Participant added", channel });
   } catch (err) {
     res.status(500).json({ error: err.message });
